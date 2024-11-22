@@ -7,9 +7,9 @@ WORKDIR /app
 # Copiar los archivos necesarios al contenedor
 COPY requirements.txt ./requirements.txt
 COPY app ./app
-COPY modelo_kmeans.pkl ./modelo_kmeans.pkl
-COPY modelo_random_forest_cluster_0.pkl ./modelo_random_forest_cluster_0.pkl
-COPY modelo_random_forest_cluster_1.pkl ./modelo_random_forest_cluster_1.pkl
+COPY app/models/modelo_kmeans.pkl ./modelo_kmeans.pkl
+COPY app/models/modelo_random_forest_cluster_0.pkl ./modelo_random_forest_cluster_0.pkl
+COPY app/models/modelo_random_forest_cluster_1.pkl ./modelo_random_forest_cluster_1.pkl
 
 # Instalar las dependencias
 RUN pip install --no-cache-dir -r requirements.txt
