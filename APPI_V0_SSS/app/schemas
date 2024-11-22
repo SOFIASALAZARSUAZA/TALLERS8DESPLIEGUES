@@ -1,0 +1,31 @@
+"""
+# ---------------------------------------------------------------
+# SCHEMAS
+# version 0.0
+# SOFIA SALAZAR SUAZA 
+# 10/11/2024
+# ---------------------------------------------------------------
+# ---------------------------------------------------------------
+# 
+# ---------------------------------------------------------------
+"""
+from pydantic import BaseModel, Field
+from typing import Dict
+
+class PrediccionEntrada(BaseModel):
+    """
+    Esquema para las variables de entrada a la API.
+    Contiene un diccionario con los nombres de las variables y sus valores.
+    """
+    variables: Dict[str, float] = Field(
+        ...,
+        description="Diccionario con las variables de entrada, donde las claves son los nombres de las variables y los valores son números flotantes."
+    )
+
+class PrediccionSalida(BaseModel):
+    """
+    Esquema para la respuesta de la API.
+    Contiene el clúster identificado y la predicción generada.
+    """
+    cluster: int = Field(..., description="Identificador del clúster predicho (0 o 1).")
+    prediccion: float = Field(..., description="Valor predicho para la dosis total.")

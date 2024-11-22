@@ -1,0 +1,25 @@
+# ---------------------------------------------------------------
+# Rutina para Importar Modelos, objetivo reutilizarla en codigo
+# version 0.0
+# SOFIA SALAZAR SUAZA 
+# 10/11/2024
+# ---------------------------------------------------------------
+# ---------------------------------------------------------------
+# 
+# ---------------------------------------------------------------
+
+import pickle
+
+# Guardar el modelo para el Cluster 0
+with open("modelo_random_forest_cluster_0.pkl", "wb") as file:
+    pickle.dump(model_0, file)
+
+# Guardar el modelo para el Cluster 1
+with open("modelo_random_forest_cluster_1.pkl", "wb") as file:
+    pickle.dump(model_1, file)
+
+# Guardar el modelo de KMeans
+with open("modelo_kmeans.pkl", "wb") as file:
+    pickle.dump(kmeans, file)
+
+print("Modelos guardados exitosamente.")
