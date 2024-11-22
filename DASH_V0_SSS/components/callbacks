@@ -1,0 +1,86 @@
+# ---------------------------------------------------------------
+# Rutina para callbacks
+# version 0.0
+# SOFIA SALAZAR SUAZA 
+# 10/11/2024
+# ---------------------------------------------------------------
+# ---------------------------------------------------------------
+# 
+# ---------------------------------------------------------------
+
+import pandas as pd
+import plotly.express as px
+from dash import Input, Output
+from sklearn.preprocessing import StandardScaler
+
+# Función para registrar los callbacks en la aplicación Dash
+def register_callbacks(app, kmeans_model, model_cluster_0, model_cluster_1, variable_ranges, variables_importantes_captación, variables_importantes_cruda, variables_importantes_mez):
+    # Lista combinada de todas las variables importantes
+    todas_las_variables = variables_importantes_captación + variables_importantes_cruda + variables_importantes_mez
+
+    # Inicializar histórico de predicciones
+    historico_predicciones_0 = []
+    historico_predicciones_1 = []
+
+    @app.callback(
+        [
+            Output("prediccion_cluster_0", "children"),
+            Output("grafico_prediccion_cluster_0", "figure"),
+            Output("prediccion_cluster_1", "children"),
+            Output("grafico_prediccion_cluster_1", "figure"),
+        ],
+        [Input("actualizar_button", "n_clicks")] +
+        [Input(f'bocatoma_{i}', "value") for i in range(len(variables_importantes_captación))] +
+        [Input(f'cruda_{i}', "value") for i in range(len(variables_importantes_cruda))] +
+        [Input(f'mezclada_{i}', "value") for i in range(len(variables_importantes_mez))]
+    )
+    def actualizar_prediccion(n_clicks, *valores):
+        # Crear un DataFrame con los valores de entrada
+        valores_dict = {col: valor for col, valor in zip(todas_las_variables, valores)}
+        valores_df = pd.DataFrame([valores_dict], columns=todas_las_variables)
+
+        # Escalado de las variables
+        scaler = StandardScaler()
+        valores_df_scaled = scaler.fit_transform(valores_df)
+
+        # Predecir el clúster usando KMeans
+        cluster = kmeans_model.predict(valores_df_scaled)[0]
+
+        # Actualizar las predicciones según el clúster
+        if cluster == 0:
+            valores_df_0 = valores_df[model_cluster_0.feature_names_in_]
+            prediccion_0 = model_cluster_0.predict(valores_df_0)[0]
+            historico_predicciones_0.append(prediccion_0)
+
+            # Gráfico para el historial de predicciones del Clúster 0
+            fig_0 = px.line(
+                x=list(range(1, len(historico_predicciones_0) + 1)),
+                y=historico_predicciones_0,
+                title="Historial de Predicciones - Clúster 0",
+                labels={"x": "Número de Predicción", "y": "Dosis Total"}
+            )
+            prediccion_texto_0 = f"Predicción de Dosis Total para el Clúster 0: {prediccion_0:.2f}"
+
+            # Devolver valores en blanco para el Clúster 1
+            prediccion_texto_1 = "N/A"
+            fig_1 = px.scatter()  # Gráfico vacío
+
+        else:
+            valores_df_1 = valores_df[model_cluster_1.feature_names_in_]
+            prediccion_1 = model_cluster_1.predict(valores_df_1)[0]
+            historico_predicciones_1.append(prediccion_1)
+
+            # Gráfico para el historial de predicciones del Clúster 1
+            fig_1 = px.line(
+                x=list(range(1, len(historico_predicciones_1) + 1)),
+                y=historico_predicciones_1,
+                title="Historial de Predicciones - Clúster 1",
+                labels={"x": "Número de Predicción", "y": "Dosis Total"}
+            )
+            prediccion_texto_1 = f"Predicción de Dosis Total para el Clúster 1: {prediccion_1:.2f}"
+
+            # Devolver valores en blanco para el Clúster 0
+            prediccion_texto_0 = "N/A"
+            fig_0 = px.scatter()  # Gráfico vacío
+
+        return prediccion_texto_0, fig_0, prediccion_texto_1, fig_1

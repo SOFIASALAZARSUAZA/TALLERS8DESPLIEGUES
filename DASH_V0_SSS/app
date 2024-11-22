@@ -1,0 +1,25 @@
+# ---------------------------------------------------------------
+# Rutina para APP
+# version 0.0
+# SOFIA SALAZAR SUAZA 
+# 10/11/2024
+# ---------------------------------------------------------------
+# ---------------------------------------------------------------
+# 
+# ---------------------------------------------------------------
+
+from dash import Dash
+from components.layout import create_layout
+from components.callbacks import register_callbacks
+
+app = Dash(__name__)
+
+# Configuración de layout
+app.layout = create_layout()
+
+# Configuración de callbacks
+register_callbacks(app)
+
+if __name__ == "__main__":
+    app.run_server(debug=True, host="0.0.0.0", port=8050)
+

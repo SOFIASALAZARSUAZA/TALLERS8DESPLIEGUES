@@ -1,0 +1,110 @@
+# ---------------------------------------------------------------
+# Rutina para Diseño
+# version 0.0
+# SOFIA SALAZAR SUAZA 
+# 10/11/2024
+# ---------------------------------------------------------------
+# ---------------------------------------------------------------
+# 
+# ---------------------------------------------------------------
+
+from dash import html, dcc
+
+# Definir el diseño del dashboard
+def create_layout(variable_ranges, variables_importantes_captación, variables_importantes_cruda, variables_importantes_mez):
+    return html.Div([
+        # Encabezado
+        html.Div([
+            html.H1("Dashboard de Predicción de Dosis Total", style={"text-align": "center", "color": "blue"}),
+            html.Div("Logo Empresa", style={"text-align": "right", "font-size": "24px", "margin-right": "10px"})
+        ], style={"display": "flex", "justify-content": "space-between", "padding": "10px", "background-color": "#e0e0e0"}),
+
+        # Contenedor principal
+        html.Div([
+            # Columna de control de variables
+            html.Div([
+                html.H3("Control de Variables", style={"text-align": "center"}),
+                dcc.Tabs(id="tabs", children=[
+                    # Tab para BocToma
+                    dcc.Tab(label="Variables BocToma (BN)", children=[
+                        html.Div([html.Label("Seleccione los valores de las variables")] + [
+                            html.Div([
+                                html.Label(variable),
+                                dcc.Slider(
+                                    id=f'bocatoma_{i}',
+                                    min=variable_ranges[variable]["min"],
+                                    max=variable_ranges[variable]["max"],
+                                    value=variable_ranges[variable]["mean"],
+                                    marks={
+                                        round(variable_ranges[variable]["min"], 2): str(round(variable_ranges[variable]["min"], 2)),
+                                        round(variable_ranges[variable]["max"], 2): str(round(variable_ranges[variable]["max"], 2))
+                                    },
+                                    tooltip={"placement": "bottom"}
+                                )
+                            ], style={"margin-bottom": "10px"}) for i, variable in enumerate(variables_importantes_captación)
+                        ])
+                    ]),
+                    # Tab para Cruda
+                    dcc.Tab(label="Variables Cruda (CRU)", children=[
+                        html.Div([html.Label("Seleccione los valores de las variables")] + [
+                            html.Div([
+                                html.Label(variable),
+                                dcc.Slider(
+                                    id=f'cruda_{i}',
+                                    min=variable_ranges[variable]["min"],
+                                    max=variable_ranges[variable]["max"],
+                                    value=variable_ranges[variable]["mean"],
+                                    marks={
+                                        round(variable_ranges[variable]["min"], 2): str(round(variable_ranges[variable]["min"], 2)),
+                                        round(variable_ranges[variable]["max"], 2): str(round(variable_ranges[variable]["max"], 2))
+                                    },
+                                    tooltip={"placement": "bottom"}
+                                )
+                            ], style={"margin-bottom": "10px"}) for i, variable in enumerate(variables_importantes_cruda)
+                        ])
+                    ]),
+                    # Tab para Mezclada
+                    dcc.Tab(label="Variables Mezclada (Mez)", children=[
+                        html.Div([html.Label("Seleccione los valores de las variables")] + [
+                            html.Div([
+                                html.Label(variable),
+                                dcc.Slider(
+                                    id=f'mezclada_{i}',
+                                    min=variable_ranges[variable]["min"],
+                                    max=variable_ranges[variable]["max"],
+                                    value=variable_ranges[variable]["mean"],
+                                    marks={
+                                        round(variable_ranges[variable]["min"], 2): str(round(variable_ranges[variable]["min"], 2)),
+                                        round(variable_ranges[variable]["max"], 2): str(round(variable_ranges[variable]["max"], 2))
+                                    },
+                                    tooltip={"placement": "bottom"}
+                                )
+                            ], style={"margin-bottom": "10px"}) for i, variable in enumerate(variables_importantes_mez)
+                        ])
+                    ])
+                ])
+            ], style={"width": "60%", "padding": "10px", "background-color": "#f5f5f5", "border-right": "1px solid #ddd"}),
+
+            # Columna de gráficos de predicción
+            html.Div([
+                # Predicción para Clúster 0
+                html.Div([
+                    html.H3("Dosis Clúster 0", style={"text-align": "center", "color": "blue"}),
+                    html.Div(id="prediccion_cluster_0", style={"font-size": "24px", "text-align": "center", "margin-bottom": "10px", "color": "blue"}),
+                    dcc.Graph(id="grafico_prediccion_cluster_0")
+                ], style={"padding": "10px"}),
+
+                # Predicción para Clúster 1
+                html.Div([
+                    html.H3("Dosis Clúster 1", style={"text-align": "center", "color": "blue"}),
+                    html.Div(id="prediccion_cluster_1", style={"font-size": "24px", "text-align": "center", "margin-bottom": "10px", "color": "blue"}),
+                    dcc.Graph(id="grafico_prediccion_cluster_1")
+                ], style={"padding": "10px"})
+            ], style={"width": "40%", "padding": "10px", "background-color": "#f9f9f9"})
+        ], style={"display": "flex", "flex-direction": "row"}),
+
+        # Botón de actualización
+        html.Div([
+            html.Button("Actualizar Predicción", id="actualizar_button", n_clicks=0, style={"margin-top": "10px"})
+        ], style={"text-align": "center", "padding": "10px"})
+    ])

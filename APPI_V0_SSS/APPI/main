@@ -1,0 +1,37 @@
+# ---------------------------------------------------------------
+# Rutina Main
+# version 0.0
+# SOFIA SALAZAR SUAZA 
+# 10/11/2024
+# ---------------------------------------------------------------
+# ---------------------------------------------------------------
+# 
+# ---------------------------------------------------------------
+from fastapi import FastAPI, HTTPException
+from app.utils import kmeans_model, rf_cluster_0, rf_cluster_1
+from app.schemas import PrediccionEntrada
+
+app = FastAPI()
+
+@app.get("/health")
+def health():
+    return {"status": "API is running"}
+
+@app.post("/predict")
+def predict(data: PrediccionEntrada):
+    try:
+        # Convertir las variables a formato esperado
+        input_data = [data.variables]
+        
+        # Predecir el clúster
+        cluster = kmeans_model.predict(input_data)[0]
+        
+        # Predecir según el clúster
+        if cluster == 0:
+            prediccion = rf_cluster_0.predict(input_data)[0]
+        else:
+            prediccion = rf_cluster_1.predict(input_data)[0]
+        
+        return {"cluster": cluster, "prediccion": prediccion}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
